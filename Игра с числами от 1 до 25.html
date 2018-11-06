@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Игра</title>
+  <style>
+    td {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      text-align: center;
+      cursor: pointer;
+
+    }
+    .active {
+      background:  red;
+    }
+    span {
+      position: relative;
+      left: 100px;
+    }
+    button {
+      position: relative;
+      left: 90px;
+    }
+    h2 {
+      position: relative;
+      left: 700px;
+      bottom: 320px;
+      color: #ED3CCA;
+    }
+    p {
+      position: relative;
+
+      bottom: 300px;
+      text-align: center;
+      font-size: 18px;
+    }
+    strong {
+      color: #FF033E;
+    }
+  </style>
+</head>
+  <body>
+    <span id = "time">60</span><span> секунд</span>
+    <table id = "field"></table>
+    <button>Начать игру!</button>
+
+    <script type="text/javascript">
+
+    var table = document.getElementById('field');
+
+    addElemsOnTable(table, 5, 25);
+
+    function addElemsOnTable(table, elemChunk, numberIndex) {
+      var button = document.querySelector('button');
+      var span = document.getElementById('time');
+
+      var index = addArray(numberIndex);
+      index = shuffle(index);
+      index = chunkArr(elemChunk, index);
+
+      createTable(index);
+
+      button.addEventListener('click', function() {
+        addClickOnTd(table);
+        start();
+        button.disabled = true;
+     });
+
+     function timer() {
+       span.innerHTML = parseInt(span.innerHTML) - 1;
+       if (span.innerHTML == 0) {
+         stop(table);
+         span.innerHTML = 60;
+         return alert('Вы проиграли');
+       }
+     }
+
+     function start() {
+       window.timerId = window.setInterval(timer,1000);
+     }
+
+     function stop(table) {
+       window.clearInterval(timerId);
+       table.innerHTML = '';
+       addElemsOnTable(table, elemChunk, numberIndex);
+       button.disabled = false;
+     }
+
+      function addClickOnTd(table) {
+        var td = table.querySelectorAll('td');
+        var num = 1;
+
+        for (var i = 0; i < td.length; i++) {
+            td[i].addEventListener('click', add);
+      }
+
+        function add() {
+          if (this.innerHTML == num){
+            this.classList.add('active');
+            num++;
+
+          getWin(getSum(table));
+          }
+        }
+      }
+
+      function getWin(elem) {
+        var result = 0;
+        var i  = 11;
+          for (var i = 0; i < index.length; i++) {
+            for (var j = 0; j < index[i].length; j++) {
+              result +=  index[i][j];
+            }
+          }
+        if (result == elem) {
+          alert('Вы выиграли!');
+          table.innerHTML = '';
+
+          elemChunk++;
+          numberIndex = elemChunk*elemChunk;
+
+          addElemsOnTable(table, elemChunk, numberIndex);
+          stop(table);
+
+          span.innerHTML = 60;
+
+        }
+      }
+}
+
+    function createTable(index) {
+      for (var i = 0; i < index.length; i++) {
+        var tr = document.createElement('tr');
+
+      for (var j = 0; j < index[i].length; j++) {
+        var td = document.createElement('td');
+        td.innerHTML = index[i][j];
+        tr.appendChild(td);
+        td.disabled = true;
+      }
+      table.appendChild(tr);
+    }
+}
+
+
+
+  function showSum(total, table) {
+    getTotal(total, getSum(table));
+  }
+
+  function getTotal(name, elem) {
+    name.innerHTML = 'Сумма: ' + elem;
+  }
+
+  function getSum(table) {
+    var sum = 0;
+    var td = table.querySelectorAll('td');
+    for (var i = 0; i < td.length; i++) {
+      if (td[i].classList.contains('active')) {
+        sum += parseInt(td[i].innerHTML);
+      }
+    }
+    return sum;
+  }
+
+    function shuffle(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+      return array;
+    }
+
+    function addArray(num) {
+      var arr = [];
+        for (var i = 1; i <= num; i++) {
+          arr.push(i);
+          }
+          return arr;
+    }
+    function chunkArr(num, arr) {
+      var result = [];
+      var chunk = [];
+      var iterCount = arr.length / num;
+
+      for (var i = 0; i < iterCount; i++) {
+        chunk = arr.splice(0, num);
+        result.push(chunk);
+      }
+      return result;
+
+    }
+
+
+
+    </script>
+
+  </body>
+</html>
